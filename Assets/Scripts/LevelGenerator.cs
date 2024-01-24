@@ -10,58 +10,69 @@ public class LevelGenerator : MonoBehaviour
 {
     [Header("Prefabs")]
     [SerializeField] private GameObject gridPrefab;
+    [SerializeField] private GameObject pathPointPrefab;
 
     [Header("Level Options")]
-    [SerializeField] private int weight;
-    [SerializeField] private int height;
-    private int[,] gridArrays;
+    [SerializeField] private LevelPathernSO SO_Level_Patherns;
+
+    private LevelPathernSO.LevelData _currentLevelData;
+    private int _currentLevelWidth;
+    private int _currentLevelHeight;
+    [SerializeField] private int _currentLevel = 1;
+    
+    private int[,] _gridArrays;
 
     private Dictionary<Tuple<int, int>, GameObject> Paths = new Dictionary<Tuple<int, int>, GameObject>();
-    private Dictionary<Tuple<int, int>, GameObject> Corners = new Dictionary<Tuple<int, int>, GameObject>();
 
     void Start()
     {
-        gridArrays = new int[weight, height];
-
+        GetcurrentLevelData();
         GenerateLevel();
     }
+
+    private void GetcurrentLevelData()
+    {
+        foreach (var levelData in SO_Level_Patherns.levels)
+        {
+            if (_currentLevel == levelData.level)
+            {
+                _currentLevelHeight = levelData.levelHeight;
+                _currentLevelWidth = levelData.levelWidth;
+                _gridArrays = new int[levelData.levelWidth, levelData.levelHeight];
+                _currentLevelData = levelData;
+            }
+        }
+    }
+
     private void GenerateLevel()
     {
-        for (int x = 0; x < gridArrays.GetLength(0); x++)
+        for (int x = 0; x < _gridArrays.GetLength(0); x++)
         {
-            for (int y = 0; y < gridArrays.GetLength(1); y++)
+            for (int y = 0; y < _gridArrays.GetLength(1); y++)
             {
                 GameObject clone = Instantiate(gridPrefab, new Vector3(x, y, 0), Quaternion.identity);
 
-                if (x == 0 || x == weight - 1 || y == 0 || y == height - 1)
-                {
-                    Corners.Add(new Tuple<int, int>(x, y), clone);
+                if ((x == 0 && y == 0) || (x == 0 && y == _currentLevelHeight - 1) || (x == _currentLevelWidth - 1 && y == 0) || x == _currentLevelWidth - 1 && y == _currentLevelHeight - 1)    
                     continue;
-                }
-
+                
                 Paths.Add(new Tuple<int, int>(x, y), clone);
             }
         }
-        GenerateManuelRoad(new List<Vector2> { new Vector2(5, 0), new Vector2(5, 1), new Vector2(5, 2), new Vector2(5, 3), new Vector2 (5,4), 
-            new Vector2(5, 5), new Vector2(6, 5), new Vector2(7, 6), new Vector2(7,7), new Vector2(7,8), new Vector2(8,8) });    
+        GenerateRoad();    
 
     }
-    private void GenerateManuelRoad(List<Vector2> MapPoints)
+    private void GenerateRoad()
     {
-        for(int x = 0; x < MapPoints.Count; x++)
+        foreach (var Data in _currentLevelData.gridPath)
         {
-            if(x == 0 || x == MapPoints.Count) // baþlangýç ve bitiþ noktasýný ayrý alýyoruz
-            {
-                Corners.TryGetValue(new Tuple<int, int>((int)MapPoints[x].x,(int)MapPoints[x].y),out GameObject gridobject);
-                Destroy(gridobject);
-                continue;
-            }
+            if (Data.spawnPathNode)
+                Instantiate(pathPointPrefab, new Vector2(Data.roadPosition.x, Data.roadPosition.y), quaternion.identity);
 
-            Paths.TryGetValue(new Tuple<int, int>((int)MapPoints[x].x, (int)MapPoints[x].y), out GameObject grid);
-            Destroy(grid);
-
-        }
+            Paths.TryGetValue(new Tuple<int, int>((int)Data.roadPosition.x, (int)Data.roadPosition.y), out GameObject gridobject);
+            Destroy(gridobject);
+        }       
     }
+    /*
     private void ChoiceRandomStartAndEndPosition()
     {
         int randomNumber = UnityEngine.Random.Range(0, 2); // 0 gelirse x üzerinden, 1 gelirse y üzerinden baþlat.
@@ -112,5 +123,5 @@ public class LevelGenerator : MonoBehaviour
 
     }
     private bool isOnXRotation(int number) => number == 0;
-
+    */
 }
