@@ -1,127 +1,145 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEditorInternal;
 using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
 {
+    [Header("Hierarcy_Categorys")]
+    [SerializeField] private Transform gridCategoryParrent;
+    [SerializeField] private Transform pathCategoryParrent;
+
+    [Header("Managers")]
+    [SerializeField] private EnemyWaveManager spawnManager;
+
     [Header("Prefabs")]
     [SerializeField] private GameObject gridPrefab;
+    [SerializeField] private GameObject gridPrefab2;
+
     [SerializeField] private GameObject pathPointPrefab;
 
-    [Header("Level Options")]
-    [SerializeField] private LevelPathernSO SO_Level_Patherns;
+    [Header("Level Data")]
+    [SerializeField] private LevelPathernSO []SO_Level_Patherns;
 
     private LevelPathernSO.LevelData _currentLevelData;
     private int _currentLevelWidth;
     private int _currentLevelHeight;
-    [SerializeField] private int _currentLevel = 1;
-    
-    private int[,] _gridArrays;
+    private int _currentLevel;
 
-    private Dictionary<Tuple<int, int>, GameObject> Paths = new Dictionary<Tuple<int, int>, GameObject>();
+    private List<Transform> currentLevelPathPoint = new();
 
-    void Start()
+    private Dictionary<Tuple<int, int>, GameObject> Paths = new();
+
+
+    void Awake()
     {
+        _currentLevel = 1;
         GetcurrentLevelData();
         GenerateLevel();
     }
 
     private void GetcurrentLevelData()
     {
-        foreach (var levelData in SO_Level_Patherns.levels)
+        foreach (var levelData in SO_Level_Patherns)
         {
-            if (_currentLevel == levelData.level)
+            if (_currentLevel == levelData.levels.level)
             {
-                _currentLevelHeight = levelData.levelHeight;
-                _currentLevelWidth = levelData.levelWidth;
-                _gridArrays = new int[levelData.levelWidth, levelData.levelHeight];
-                _currentLevelData = levelData;
+                _currentLevelHeight = levelData.levels.levelHeight;
+                _currentLevelWidth = levelData.levels.levelWidth;
+                _currentLevelData = levelData.levels;
+                break;
             }
         }
+        
     }
 
     private void GenerateLevel()
     {
-        for (int x = 0; x < _gridArrays.GetLength(0); x++)
+        for (int x = 0; x <= _currentLevelWidth; x++)
         {
-            for (int y = 0; y < _gridArrays.GetLength(1); y++)
+            for (int y = 0; y <= _currentLevelHeight; y++)
             {
-                GameObject clone = Instantiate(gridPrefab, new Vector3(x, y, 0), Quaternion.identity);
+                GameObject clone = Instantiate(GetGridPrefab(new Vector2(x, y)), new Vector3(x, y, 0), Quaternion.identity);
 
-                if ((x == 0 && y == 0) || (x == 0 && y == _currentLevelHeight - 1) || (x == _currentLevelWidth - 1 && y == 0) || x == _currentLevelWidth - 1 && y == _currentLevelHeight - 1)    
-                    continue;
-                
+                clone.transform.SetParent(gridCategoryParrent);
+
                 Paths.Add(new Tuple<int, int>(x, y), clone);
             }
         }
-        GenerateRoad();    
-
+        GenerateRoad();
     }
+
     private void GenerateRoad()
     {
-        foreach (var Data in _currentLevelData.gridPath)
+        foreach (var pathData in _currentLevelData.gridPath)
         {
-            if (Data.spawnPathNode)
-                Instantiate(pathPointPrefab, new Vector2(Data.roadPosition.x, Data.roadPosition.y), quaternion.identity);
 
-            Paths.TryGetValue(new Tuple<int, int>((int)Data.roadPosition.x, (int)Data.roadPosition.y), out GameObject gridobject);
-            Destroy(gridobject);
-        }       
+            int totalPath = CalculateRoadLength(pathData, pathData.isMovementOnX);
+
+            Vector2 StartPosition = new(pathData.pathStartPosition.x, pathData.pathStartPosition.y);
+
+            for (int currentPathNumber = 0; currentPathNumber <= totalPath; currentPathNumber++)
+            {
+                GameObject gridObject;
+
+                if (pathData.isMovementOnX)
+                {
+                    var newXLocation = IsRoadGoingReverseRotation(pathData, pathData.isMovementOnX) ? StartPosition.x - currentPathNumber : StartPosition.x + currentPathNumber;
+                    Paths.TryGetValue(new Tuple<int, int>((int)newXLocation, (int)StartPosition.y), out gridObject);
+                }
+                else
+                {
+                    var newYLocation = IsRoadGoingReverseRotation(pathData, pathData.isMovementOnX) ? StartPosition.y - currentPathNumber : StartPosition.y + currentPathNumber;
+                    Paths.TryGetValue(new Tuple<int, int>((int)StartPosition.x, (int)newYLocation), out gridObject);
+                }
+                Destroy(gridObject);
+            }
+            CreateAIPathPoint(pathData.pathEndPosition);
+
+        }
+        // DUZELTTTTTTTTTT
+        spawnManager.GetCurrentLevelÝnformation(SO_Level_Patherns[0].GetLevelStartPosition(_currentLevel), currentLevelPathPoint);
     }
-    /*
-    private void ChoiceRandomStartAndEndPosition()
+
+    private void CreateAIPathPoint(Vector2 pathSpawnPosition)
     {
-        int randomNumber = UnityEngine.Random.Range(0, 2); // 0 gelirse x üzerinden, 1 gelirse y üzerinden baþlat.
-        bool isOnX = isOnXRotation(randomNumber);
-        Debug.Log("Gelen sayý:" + randomNumber);
+        var clonePathPoint = Instantiate(pathPointPrefab, pathSpawnPosition, Quaternion.identity).transform;
+        currentLevelPathPoint.Add(clonePathPoint);
+        clonePathPoint.transform.SetParent(pathCategoryParrent);
+    }
 
-        int startPoint = randomNumber == 0 ? UnityEngine.Random.Range(minInclusive: 1, weight - 2) : UnityEngine.Random.Range(1, height - 2);
-        int endPoint = randomNumber == 0 ? UnityEngine.Random.Range(1, weight - 2) : UnityEngine.Random.Range(1, height - 2);
-        Debug.Log("Baþlangýç numarasý:" + startPoint + ", bitiþ numarasý: " + endPoint);
+    private int CalculateRoadLength(LevelPathernSO.LevelPathInformation data, bool isOnXaxis)
+    {
+        if (isOnXaxis)
+            return (int)MathF.Abs(data.pathStartPosition.x - data.pathEndPosition.x);
 
-        GameObject startPosition = randomNumber == 0 ? Corners[new Tuple<int, int>(startPoint, 0)] : Corners[new Tuple<int, int>(0, startPoint)];
-        GameObject endPosition = randomNumber == 0 ? Corners[new Tuple<int, int>(endPoint, height - 1)] : Corners[new Tuple<int, int>(weight - 1, endPoint)];
+        return (int)MathF.Abs(data.pathStartPosition.y - data.pathEndPosition.y);
 
-        //GenerateRandomRoad(startPosition.gameObject.transform.position, endPosition.gameObject.transform.position, isOnX);
-        Destroy(startPosition);
-        Destroy(endPosition);    
+    }
+    private bool IsRoadGoingReverseRotation(LevelPathernSO.LevelPathInformation data, bool isOnXaxis)
+    {
+        if (isOnXaxis)
+            return 0 > data.pathEndPosition.x - data.pathStartPosition.x;
+
+        return 0 > data.pathEndPosition.y - data.pathStartPosition.y;
+    }
+
+    private GameObject GetGridPrefab(Vector2 gridPosition)
+    {
+        if ((gridPosition.x % 2 == 0 && gridPosition.y % 2 != 0) || (gridPosition.x % 2 != 0 && gridPosition.y % 2 == 0))
+                return gridPrefab;
         
+         return gridPrefab2;
     }
-    private void GenerateRandomRoad(Vector2 startPosition, Vector2 endPosition, bool isOnXRotation)
-    {
-        // YARIM KALDI
 
-        float numberNeedGoOnX;
-        float numberNeedGoOnY;
-        if (isOnXRotation)
-        {
-            if (startPosition.x == endPosition.x)
-            {
-                numberNeedGoOnX = 0;
-                return;
-            }
-            bool xUporDown = startPosition.x > endPosition.x ? true : false;
-            numberNeedGoOnX = xUporDown ? startPosition.x - endPosition.x : endPosition.x - startPosition.x;     
-        }
-        else
-        {
-            if (startPosition.y == endPosition.y)
-            {
-                numberNeedGoOnY = 0;
-                return;
-            }
-            bool yUporDown = startPosition.y > endPosition.y ? true : false;
-            numberNeedGoOnY = yUporDown ? startPosition.y - endPosition.y : endPosition.y - startPosition.y;
-        }
-
-        Vector2 currentPosition = startPosition;
+    public List<Transform> GetPathList() => currentLevelPathPoint;
 
 
-    }
-    private bool isOnXRotation(int number) => number == 0;
-    */
 }
