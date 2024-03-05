@@ -80,12 +80,11 @@ public class LevelGenerator : MonoBehaviour
     {
         foreach (var pathData in _currentLevelData.gridPath)
         {
-
-            int totalPath = CalculateRoadLength(pathData, pathData.isMovementOnX);
+            int RoadLength = CalculateRoadLength(pathData, pathData.isMovementOnX);
 
             Vector2 StartPosition = new(pathData.pathStartPosition.x, pathData.pathStartPosition.y);
 
-            for (int currentPathNumber = 0; currentPathNumber <= totalPath; currentPathNumber++)
+            for (int currentPathNumber = 0; currentPathNumber <= RoadLength; currentPathNumber++)
             {
                 GameObject gridObject;
 

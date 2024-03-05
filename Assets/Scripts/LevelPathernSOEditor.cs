@@ -60,13 +60,14 @@ public class LevelPathernSOEditor : Editor
         }
         EditorGUI.indentLevel -= 1;
     }  
+
     private void CheckGivenCoordinatesCorrectorNot()
     {     
        
         if(_pathStartPosition.vector2IntValue.x < 0 || _pathStartPosition.vector2IntValue.x > _levelWidth.intValue || _pathStartPosition.vector2IntValue.y < 0 || _pathStartPosition.vector2IntValue.y > _levelHeight.intValue ||
            _pathEndPosition.vector2IntValue.x < 0 || _pathEndPosition.vector2IntValue.x > _levelWidth.intValue || _pathEndPosition.vector2IntValue.y < 0 || _pathEndPosition.vector2IntValue.y > _levelHeight.intValue)
         {
-            EditorGUILayout.HelpBox("Girilen " + _gridPath.name + " 0'dan küçük ya da Grid alanýndan büyük olamaz!", MessageType.Error);
+            EditorGUILayout.HelpBox("Girilen kordinat 0'dan küçük ya da Grid alanýndan büyük olamaz!", MessageType.Error);
         }
 
         _pathEndPosition.vector2IntValue = _isMovementOnX.boolValue ? new Vector2Int(_pathEndPosition.vector2IntValue.x, _pathStartPosition.vector2IntValue.y) : new Vector2Int(_pathStartPosition.vector2IntValue.x, _pathEndPosition.vector2IntValue.y);

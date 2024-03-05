@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: EnemyDataSO
   m_EditorClassIdentifier: 
   enemyName: Enemy_lvl1
-  health: 50
-  speed: 2
+  health: 500
+  speed: 1

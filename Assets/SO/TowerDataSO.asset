@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: TowerDataSO
   m_EditorClassIdentifier: 
   damage: 20
-  range: 2
+  range: 3
   fireRate: 0.5
   bulletSpeed: 0

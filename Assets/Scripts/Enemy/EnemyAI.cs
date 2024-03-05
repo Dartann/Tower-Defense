@@ -12,6 +12,7 @@ public class EnemyAI : MonoBehaviour
 
     int speed;
     private void Start() => speed = GetComponent<EnemyData>().GetSpeed();
+
     private void FixedUpdate(){
         transform.position = Vector2.MoveTowards(transform.position, _currentTargetPosition, speed * Time.deltaTime);
         UpdateTarget();
@@ -23,14 +24,15 @@ public class EnemyAI : MonoBehaviour
     }
 
     private void SetFirstTarget() => _currentTargetPosition = _pathTargets[0].position;
+    private bool CheckTargetExist() => pathIndex > _pathTargets.Count - 1;
+    
     private void UpdateTarget(){
 
         if (Vector2.Distance(gameObject.transform.position, _currentTargetPosition) <= 0.01f)
         {
             pathIndex++;
 
-            if (pathIndex > _pathTargets.Count - 1)
-            {
+            if (CheckTargetExist()){
                 Destroy(gameObject);
                 return;
             }
