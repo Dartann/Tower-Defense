@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8872874847255032512}
   - component: {fileID: -8904930614926869292}
   - component: {fileID: 6194431783062047557}
+  - component: {fileID: 5483844884197261765}
   m_Layer: 3
   m_Name: GridModel
   m_TagString: Untagged
@@ -120,7 +121,7 @@ SpriteRenderer:
   m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.23616053, g: 0.8207547, b: 0.27513343, a: 1}
+  m_Color: {r: 0.21800464, g: 0.6509434, b: 0.25047508, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -130,3 +131,15 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &5483844884197261765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1296869669392808562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1beb01f2e2da30a4ea79df392164d33b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

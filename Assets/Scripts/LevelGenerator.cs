@@ -12,65 +12,53 @@ using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
 {
+
     [Header("Hierarcy_Categorys")]
     [SerializeField] private Transform gridCategoryParrent;
     [SerializeField] private Transform pathCategoryParrent;
 
     [Header("Managers")]
-    [SerializeField] private EnemyWaveManager spawnManager;
+    [SerializeField] private EnemySpawnManager enemySpawnManager; // eventen çek
+    [SerializeField] private LevelDataHolder levelDataHolder; // eventen çek
 
     [Header("Prefabs")]
     [SerializeField] private GameObject gridPrefab;
-    [SerializeField] private GameObject gridPrefab2;
-
     [SerializeField] private GameObject pathPointPrefab;
 
-    [Header("Level Data")]
-    [SerializeField] private LevelPathernSO []SO_Level_Patherns;
-
-    private LevelPathernSO.LevelData _currentLevelData;
-    private int _currentLevelWidth;
-    private int _currentLevelHeight;
+    private LevelPathernSO _currentLevelData;
     private int _currentLevel;
 
-    private List<Transform> currentLevelPathPoint = new();
+    private List<Transform> currentLevelAIPathPoints = new();
+    private Dictionary<Vector3, GameObject> currentLevelGrids = new();
 
-    private Dictionary<Tuple<int, int>, GameObject> Paths = new();
+    Color32 color = new Color32(47, 188, 57, 255);
 
-
-    void Awake()
+    void Start()
     {
+        enemySpawnManager = GetComponent<EnemySpawnManager>();
+        levelDataHolder = GetComponent<LevelDataHolder>();
+
         _currentLevel = 1;
+
         GetcurrentLevelData();
         GenerateLevel();
     }
 
-    private void GetcurrentLevelData()
-    {
-        foreach (var levelData in SO_Level_Patherns)
-        {
-            if (_currentLevel == levelData.levels.level)
-            {
-                _currentLevelHeight = levelData.levels.levelHeight;
-                _currentLevelWidth = levelData.levels.levelWidth;
-                _currentLevelData = levelData.levels;
-                break;
-            }
-        }
-        
-    }
+    private void GetcurrentLevelData() => _currentLevelData = levelDataHolder.GetCurrentLevelData(_currentLevel);    
 
     private void GenerateLevel()
     {
-        for (int x = 0; x <= _currentLevelWidth; x++)
+        for (int x = 0; x <= _currentLevelData.levels.levelWidth; x++)
         {
-            for (int y = 0; y <= _currentLevelHeight; y++)
+            for (int y = 0; y <= _currentLevelData.levels.levelHeight; y++)
             {
-                GameObject clone = Instantiate(GetGridPrefab(new Vector2(x, y)), new Vector3(x, y, 0), Quaternion.identity);
+                GameObject cloneGrid = Instantiate(gridPrefab, new Vector3(x, y, 0), Quaternion.identity);
 
-                clone.transform.SetParent(gridCategoryParrent);
+                ChangeGridColorBasedOnPosition(new Vector2(x, y), cloneGrid);
 
-                Paths.Add(new Tuple<int, int>(x, y), clone);
+                cloneGrid.transform.SetParent(gridCategoryParrent);
+
+                currentLevelGrids.Add(new Vector3(x, y), cloneGrid);
             }
         }
         GenerateRoad();
@@ -78,7 +66,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void GenerateRoad()
     {
-        foreach (var pathData in _currentLevelData.gridPath)
+        foreach (var pathData in _currentLevelData.levels.gridPath)
         {
             int RoadLength = CalculateRoadLength(pathData, pathData.isMovementOnX);
 
@@ -90,27 +78,26 @@ public class LevelGenerator : MonoBehaviour
 
                 if (pathData.isMovementOnX)
                 {
-                    var newXLocation = IsRoadGoingReverseRotation(pathData, pathData.isMovementOnX) ? StartPosition.x - currentPathNumber : StartPosition.x + currentPathNumber;
-                    Paths.TryGetValue(new Tuple<int, int>((int)newXLocation, (int)StartPosition.y), out gridObject);
+                    int newXLocation = IsRoadGoingReverseRotation(pathData, pathData.isMovementOnX) ? (int)StartPosition.x - currentPathNumber : (int)StartPosition.x + currentPathNumber;
+                    currentLevelGrids.TryGetValue(new Vector2(newXLocation, StartPosition.y), out gridObject);
                 }
                 else
                 {
-                    var newYLocation = IsRoadGoingReverseRotation(pathData, pathData.isMovementOnX) ? StartPosition.y - currentPathNumber : StartPosition.y + currentPathNumber;
-                    Paths.TryGetValue(new Tuple<int, int>((int)StartPosition.x, (int)newYLocation), out gridObject);
+                    int newYLocation = IsRoadGoingReverseRotation(pathData, pathData.isMovementOnX) ? (int)StartPosition.y - currentPathNumber : (int)StartPosition.y + currentPathNumber;
+                    currentLevelGrids.TryGetValue(new Vector2(StartPosition.x, newYLocation), out gridObject);
                 }
                 Destroy(gridObject);
             }
             CreateAIPathPoint(pathData.pathEndPosition);
 
         }
-        // DUZELTTTTTTTTTT
-        spawnManager.GetCurrentLevelÝnformation(SO_Level_Patherns[0].GetLevelStartPosition(_currentLevel), currentLevelPathPoint);
+        enemySpawnManager.SetCurrentLevelÝnformation(_currentLevelData.GetLevelStartPosition(_currentLevel), currentLevelAIPathPoints);
     }
 
     private void CreateAIPathPoint(Vector2 pathSpawnPosition)
     {
         var clonePathPoint = Instantiate(pathPointPrefab, pathSpawnPosition, Quaternion.identity).transform;
-        currentLevelPathPoint.Add(clonePathPoint);
+        currentLevelAIPathPoints.Add(clonePathPoint);
         clonePathPoint.transform.SetParent(pathCategoryParrent);
     }
 
@@ -125,20 +112,21 @@ public class LevelGenerator : MonoBehaviour
     private bool IsRoadGoingReverseRotation(LevelPathernSO.LevelPathInformation data, bool isOnXaxis)
     {
         if (isOnXaxis)
-            return 0 > data.pathEndPosition.x - data.pathStartPosition.x;
+            return 0 >= data.pathEndPosition.x - data.pathStartPosition.x;
 
-        return 0 > data.pathEndPosition.y - data.pathStartPosition.y;
+        return 0 >= data.pathEndPosition.y - data.pathStartPosition.y;
     }
 
-    private GameObject GetGridPrefab(Vector2 gridPosition)
+    private void ChangeGridColorBasedOnPosition(Vector2 gridPosition, GameObject cloneGrid)
     {
+        // use orginal prefab color
         if ((gridPosition.x % 2 == 0 && gridPosition.y % 2 != 0) || (gridPosition.x % 2 != 0 && gridPosition.y % 2 == 0))
-                return gridPrefab;
-        
-         return gridPrefab2;
+              return;
+
+        cloneGrid.GetComponent<SpriteRenderer>().color = color;
     }
 
-    public List<Transform> GetPathList() => currentLevelPathPoint;
+    public List<Transform> GetPathList() => currentLevelAIPathPoints;
 
 
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyWaveManager : MonoBehaviour
+public class EnemySpawnManager : MonoBehaviour
 {
     [Header("Prefab")]
     [SerializeField] GameObject enemyPrefab;
@@ -19,7 +19,7 @@ public class EnemyWaveManager : MonoBehaviour
             StartCoroutine(SpawnEnemy());
     }
 
-    public void GetCurrentLevel›nformation(Vector2 enemySpawnPosition, List<Transform> currentLevelAIPath)
+    public void SetCurrentLevel›nformation(Vector2 enemySpawnPosition, List<Transform> currentLevelAIPath)
     {
         _enemySpawnPosition = enemySpawnPosition;
         _currentLevelPath = currentLevelAIPath;

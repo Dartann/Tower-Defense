@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89a15348dbd2eaa48859fce4fc2a7f53, type: 3}
-  m_Name: TowerDataSO
+  m_Name: DoubleBarrelTowerSO
   m_EditorClassIdentifier: 
-  damage: 20
-  range: 3
+  towerID: 7ffcdc95-2601-48c1-8068-0b5aa8a58b36
+  damage: 25
+  range: 2
   fireRate: 0.5
   bulletSpeed: 0

@@ -9,63 +9,64 @@ using UnityEngine;
 
 public class PlacementManager : MonoBehaviour
 {
+    public delegate Transform CreateTower(string towerID, GridObject currentGridTile);
+    public static CreateTower createTower;
+
     [SerializeField] Camera cam;
 
     [Header("PlacementCheckLayers")]
     [SerializeField] LayerMask gridLayer;
-    [SerializeField] LayerMask towerLayer;
-
-    [Header("Prefab")]
-    [SerializeField] GameObject towerPrefab;
 
     [Header("Placement Cursor")]
     [SerializeField] GameObject cursorObject;
 
     GameObject currentGridTileObject;
 
-    public bool isInBuildingMode = true;
-    public bool canBuildOnTile = false;
-
-
+    bool isInBuildingMode = true;
+    string currentSelectedTowerID;
+    private void Awake()
+    {
+        Shop.updateCurrentBuyedTowerOBject += UpdateCurrentSelectedTowerID;
+    }
 
     private void Update()
     {
         GetcurrentGridTile();
         Testputmethod();
     }
-    private void GetcurrentGridTile()
-    {
-        RaycastHit2D currentGridTile = Physics2D.Raycast(GetMousePosition(), Vector2.zero, 0.1f, gridLayer , -100 , 100);
+    private void GetcurrentGridTile(){
+        RaycastHit2D currentGridTile = Physics2D.Raycast(GetMousePositionAsGridPosition(), Vector2.zero, 0.1f, gridLayer , -100 , 100);
 
-        if (currentGridTile.collider == null)
+        currentGridTileObject = currentGridTile.collider ? currentGridTile.collider.gameObject : null;
+
+        if (!currentGridTileObject)
             return;
 
-        if (CanBuildOnPosition())
-        {
-            cursorObject.transform.position = currentGridTile.collider.transform.position;
-            currentGridTileObject = currentGridTile.collider.gameObject;
-        }
+        cursorObject.transform.position = currentGridTileObject.transform.position;
     }
-    private bool CanBuildOnPosition()
-    {
-        RaycastHit2D currentGridTile = Physics2D.Raycast(GetMousePosition(), Vector2.zero, 0.1f, towerLayer, -100, 100);
-        
-        if(currentGridTile.collider == null)
-            return canBuildOnTile = true;
+    private void BuildOnPosition(){
 
-        return canBuildOnTile = false;
+        if (!currentGridTileObject || string.IsNullOrEmpty(currentSelectedTowerID))
+            return;
+
+        var gridData = currentGridTileObject.GetComponent<GridObject>();
+
+        var createdTower = createTower?.Invoke(currentSelectedTowerID, gridData);
+        gridData.SetNewTransformObject(createdTower);
+
     }
-    private Vector2 GetMousePosition()
-    {
+    private Vector2 GetMousePositionAsGridPosition(){
        Vector2 position = cam.ScreenToWorldPoint(Input.mousePosition);
        return new(MathF.Round(position.x), Mathf.Round(position.y));
     }
     private void Testputmethod()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0) && isInBuildingMode && canBuildOnTile)
-        {
-           GameObject createdTower = Instantiate(towerPrefab, currentGridTileObject.transform.position, Quaternion.identity);
-           createdTower.GetComponent<BoxCollider2D>().enabled = true;
-        }
+        if (Input.GetKeyDown(KeyCode.Mouse0) && isInBuildingMode)
+            BuildOnPosition();
+        
+    }
+    private void UpdateCurrentSelectedTowerID(BaseTowerScript data)
+    {
+        currentSelectedTowerID = data.GetTowerData().towerID;
     }
 }
