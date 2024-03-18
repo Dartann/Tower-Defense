@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -5,23 +6,42 @@ using UnityEngine;
 
 public class GridObject : MonoBehaviour
 {
-    Transform TowerObject;
-    public void SetNewTransformObject(Transform transform)
-    {
-        if (!transform)
-            return;
+    // Used in PlacementManager
+    public static Action<GameObject> Event_UpdateCurrentGridobject;
+    public static Action Event_CheckTowerHasUpgrade;
 
+    BaseTowerScript towerObjectOnGrid;
+    public void SetTowerObjectOnGrid(BaseTowerScript transform)
+    {
         DestroyOldTowerObject();
-        TowerObject = transform;
+        towerObjectOnGrid = transform;
     }
-    public Transform GetOnGridTowerTransform() => TowerObject;
+    public BaseTowerScript GetTowerObjectOnGrid()
+    {
+        if(IsThereTowerOnGrid)
+            return towerObjectOnGrid;
+
+        return null;
+    }
+    public bool IsThereTowerOnGrid => towerObjectOnGrid;
     void DestroyOldTowerObject()
     {
-        if (!TowerObject)
+        if (!towerObjectOnGrid)
             return;
 
-        Destroy(TowerObject.gameObject);
+        Destroy(towerObjectOnGrid.gameObject);
     }
+    private void OnMouseEnter()
+    {
+        Event_UpdateCurrentGridobject?.Invoke(gameObject);
+        Event_CheckTowerHasUpgrade?.Invoke();
 
+    }
+    private void OnMouseExit() => Event_UpdateCurrentGridobject.Invoke(null);
+
+    private void OnMouseOver()
+    {
+        //Add hightlight when on grid
+    }
 
 }

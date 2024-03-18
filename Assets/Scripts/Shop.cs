@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class Shop : MonoBehaviour
 {  
-    public static Action<BaseTowerScript> updateCurrentBuyedTowerOBject;
-    public void Buy(BaseTowerScript tower)
+    public static Action<BaseTowerScript> Event_UpdateCurrentTowerObjectID;
+
+    public void Buy(BaseTowerScript buyedObjectScript)
     {
-        updateCurrentBuyedTowerOBject.Invoke(tower);
+        Event_UpdateCurrentTowerObjectID.Invoke(buyedObjectScript);
     }
 }

@@ -10,10 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89a15348dbd2eaa48859fce4fc2a7f53, type: 3}
-  m_Name: DoubleBarrelTowerSO
+  m_Name: RangedTower
   m_EditorClassIdentifier: 
-  towerID: 7ffcdc95-2601-48c1-8068-0b5aa8a58b36
-  damage: 25
-  range: 2
+  damage: 10
+  range: 4
   fireRate: 0.5
   bulletSpeed: 0
+  towerLinks:
+  - linkedTower: {fileID: 11400000}
+    UpgradedTower: {fileID: 11400000, guid: 944236666fa23cb44a8af92044652919, type: 2}
+  - linkedTower: {fileID: 11400000, guid: 1fb8a15e32498af40a745db2d1511417, type: 2}
+    UpgradedTower: {fileID: 11400000, guid: 3da319768ceb34b4e9558a457e01097c, type: 2}

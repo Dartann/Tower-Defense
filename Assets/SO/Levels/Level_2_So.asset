@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d06e1d3e782dc34a9f66e455927bf9d, type: 3}
+  m_Name: Level_2_So
+  m_EditorClassIdentifier: 
+  levels:
+    level: 2
+    levelHeight: 10
+    levelWidth: 15
+    gridPath:
+    - pathStartPosition: {x: 3, y: 1}
+      pathEndPosition: {x: 7, y: 1}
+      isMovementOnX: 1
+    - pathStartPosition: {x: 7, y: 1}
+      pathEndPosition: {x: 7, y: 5}
+      isMovementOnX: 0
+    - pathStartPosition: {x: 7, y: 5}
+      pathEndPosition: {x: 9, y: 5}
+      isMovementOnX: 1
+    - pathStartPosition: {x: 9, y: 5}
+      pathEndPosition: {x: 9, y: 8}
+      isMovementOnX: 0

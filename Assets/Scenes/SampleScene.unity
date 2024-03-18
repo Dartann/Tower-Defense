@@ -604,7 +604,7 @@ MonoBehaviour:
         m_MethodName: Buy
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 4697458898930356757, guid: a5aeef61b7555fa4dad07cf6b78dc270, type: 3}
+          m_ObjectArgument: {fileID: 4375999936980138006, guid: f863b5a850193ab429cbe25750c3807e, type: 3}
           m_ObjectArgumentAssemblyTypeName: BaseTowerScript, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -1228,6 +1228,7 @@ MonoBehaviour:
   levelDataHolder: {fileID: 0}
   gridPrefab: {fileID: 1296869669392808562, guid: ba503aac95d04d146ae93843febc7d0e, type: 3}
   pathPointPrefab: {fileID: 981949755329578178, guid: 1beb243acfa84ec4fb85270f73a1f7a4, type: 3}
+  _currentLevel: 2
 --- !u!4 &1663247551
 Transform:
   m_ObjectHideFlags: 0
@@ -1287,6 +1288,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SO_Level_Patherns:
   - {fileID: 11400000, guid: cdeceb4e8069e82428dab9ebc424a51e, type: 2}
+  - {fileID: 11400000, guid: 6b9be0bd9abb9774f89da90dbe6a6ba3, type: 2}
 --- !u!114 &1663247555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1300,9 +1302,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   basePrefabs:
+  - {fileID: 4375999936980138006, guid: f863b5a850193ab429cbe25750c3807e, type: 3}
   - {fileID: 8676540450166075297, guid: 221dc460f3d2ebc439edbc1e444ab5e6, type: 3}
-  - {fileID: 4697458898930356757, guid: a5aeef61b7555fa4dad07cf6b78dc270, type: 3}
   upgradePrefabs:
+  - {fileID: -3272599673902822760, guid: 8ec79eab1eb16d949ae900f229f84923, type: 3}
   - {fileID: 4697458898930356757, guid: a5aeef61b7555fa4dad07cf6b78dc270, type: 3}
 --- !u!1 &1678452501
 GameObject:

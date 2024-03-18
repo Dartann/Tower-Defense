@@ -14,6 +14,13 @@ public class TowerDataSO : ScriptableObject
     public float fireRate;
     public int bulletSpeed;
 
-    
+    public List<TowerLinkUps> towerLinks = new();
+
+    [Serializable]
+    public class TowerLinkUps
+    {
+        public TowerDataSO linkedTower;
+        public TowerDataSO UpgradedTower;
+    }
 }
 

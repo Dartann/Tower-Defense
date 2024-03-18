@@ -26,7 +26,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private GameObject pathPointPrefab;
 
     private LevelPathernSO _currentLevelData;
-    private int _currentLevel;
+    [SerializeField] private int _currentLevel;
 
     private List<Transform> currentLevelAIPathPoints = new();
     private Dictionary<Vector3, GameObject> currentLevelGrids = new();
@@ -38,7 +38,7 @@ public class LevelGenerator : MonoBehaviour
         enemySpawnManager = GetComponent<EnemySpawnManager>();
         levelDataHolder = GetComponent<LevelDataHolder>();
 
-        _currentLevel = 1;
+        _currentLevel = 2;
 
         GetcurrentLevelData();
         GenerateLevel();
