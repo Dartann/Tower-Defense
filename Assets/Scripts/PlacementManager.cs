@@ -9,25 +9,16 @@ using UnityEngine;
 
 public class PlacementManager : MonoBehaviour
 {
-    //Used in TowerFactory script
-    public delegate BaseTowerScript CreateTower(string selectedTowerID, GridObject currentSelectedGridObject);
-    public static CreateTower Event_requestNewTower;
-
-    public delegate bool CheckTowerCanUpgraded(string selectedTowerID, GridObject currentSelectedGridObject);
-    public static CheckTowerCanUpgraded Event_isTowerUpgradeExist;
-
+    [SerializeField] TowerFactory towerFactory;
+   
     GameObject currentGridTileObject;
-    string currentSelectedTowerID;
 
     bool isInBuildingMode = true;
-    private void PlacementManager_UpdateCurrentGridObject(GameObject gridobject) { currentGridTileObject = gridobject; }
 
+    private void PlacementManager_UpdateCurrentGridObject(GameObject gridobject) { currentGridTileObject = gridobject; }
     private void Awake()
     {
-        Shop.Event_UpdateCurrentTowerObjectID += PlacementManager_UpdateCurrentSelectedTowerID;
-
         GridObject.Event_UpdateCurrentGridobject += PlacementManager_UpdateCurrentGridObject;
-        GridObject.Event_CheckTowerHasUpgrade += PlacementManager_CanUpgradeTower;
     }
 
     private void Update()
@@ -40,30 +31,19 @@ public class PlacementManager : MonoBehaviour
             BuildOnCurrentGridTile();
         
     }
-    private void PlacementManager_CanUpgradeTower()
-    {
-        if (CanBuild())
-        {
-            var gridData = currentGridTileObject.GetComponent<GridObject>();
-            Event_isTowerUpgradeExist?.Invoke(currentSelectedTowerID, gridData);
-        }
-    }
-
     private void BuildOnCurrentGridTile(){
 
         var gridData = currentGridTileObject.GetComponent<GridObject>();
 
-        var createdTower = Event_requestNewTower?.Invoke(currentSelectedTowerID, gridData);
+        var createdTower = towerFactory.InstantiateTower(gridData);
 
-        if (!createdTower)
+        if (createdTower == null)
             return;
 
-        gridData.SetTowerObjectOnGrid(createdTower);
+        var NewTower = Instantiate(createdTower, gridData.transform.position, Quaternion.identity);
+        gridData.SetTowerObjectOnGrid(NewTower);
 
     }
-    private void PlacementManager_UpdateCurrentSelectedTowerID(BaseTowerScript currentSelectedTowerScript) => 
-        currentSelectedTowerID = currentSelectedTowerScript.GetTowerData().towerID;
-
-    private bool CanBuild() => isInBuildingMode && currentGridTileObject && !string.IsNullOrEmpty(currentSelectedTowerID);
+    private bool CanBuild() => isInBuildingMode && currentGridTileObject && towerFactory.CurrentSelectedTower;
 
 }

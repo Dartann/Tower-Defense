@@ -25,33 +25,35 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private GameObject gridPrefab;
     [SerializeField] private GameObject pathPointPrefab;
 
+    [Header("GridColor")]
+    [SerializeField] private Color32 gridColor;
+
     private LevelPathernSO _currentLevelData;
     [SerializeField] private int _currentLevel;
 
     private List<Transform> currentLevelAIPathPoints = new();
     private Dictionary<Vector3, GameObject> currentLevelGrids = new();
 
-    Color32 color = new Color32(47, 188, 57, 255);
-
     void Start()
     {
-        enemySpawnManager = GetComponent<EnemySpawnManager>();
         levelDataHolder = GetComponent<LevelDataHolder>();
 
         _currentLevel = 2;
 
         GetcurrentLevelData();
-        GenerateLevel();
+        StartCoroutine(GenerateLevel());
     }
 
     private void GetcurrentLevelData() => _currentLevelData = levelDataHolder.GetCurrentLevelData(_currentLevel);    
 
-    private void GenerateLevel()
+    private IEnumerator GenerateLevel()
     {
         for (int x = 0; x <= _currentLevelData.levels.levelWidth; x++)
         {
             for (int y = 0; y <= _currentLevelData.levels.levelHeight; y++)
             {
+                yield return new WaitForSeconds(0.01f);
+
                 GameObject cloneGrid = Instantiate(gridPrefab, new Vector3(x, y, 0), Quaternion.identity);
 
                 ChangeGridColorBasedOnPosition(new Vector2(x, y), cloneGrid);
@@ -61,10 +63,10 @@ public class LevelGenerator : MonoBehaviour
                 currentLevelGrids.Add(new Vector3(x, y), cloneGrid);
             }
         }
-        GenerateRoad();
+        StartCoroutine(GenerateRoad());
     }
 
-    private void GenerateRoad()
+    private IEnumerator GenerateRoad()
     {
         foreach (var pathData in _currentLevelData.levels.gridPath)
         {
@@ -74,6 +76,8 @@ public class LevelGenerator : MonoBehaviour
 
             for (int currentPathNumber = 0; currentPathNumber <= RoadLength; currentPathNumber++)
             {
+                yield return new WaitForSeconds(0.03f);
+
                 GameObject gridObject;
 
                 if (pathData.isMovementOnX)
@@ -123,7 +127,7 @@ public class LevelGenerator : MonoBehaviour
         if ((gridPosition.x % 2 == 0 && gridPosition.y % 2 != 0) || (gridPosition.x % 2 != 0 && gridPosition.y % 2 == 0))
               return;
 
-        cloneGrid.GetComponent<SpriteRenderer>().color = color;
+        cloneGrid.GetComponent<SpriteRenderer>().color = gridColor;
     }
 
     public List<Transform> GetPathList() => currentLevelAIPathPoints;

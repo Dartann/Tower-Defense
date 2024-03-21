@@ -5,25 +5,34 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static TowerDataSO;
 
 public class TowerFactory : MonoBehaviour
 {
     [SerializeField] BaseTowerScript[] basePrefabs;
     [SerializeField] BaseTowerScript[] upgradePrefabs;
 
-    private Dictionary<string, BaseTowerScript> baseTowers = new();
+    private Dictionary<string, BaseTowerScript> simpleTowers = new();
     private Dictionary<string, BaseTowerScript> AdvanceTowers = new();
 
+    public string CurrentSelectedTowerID { get; private set; }
+    public BaseTowerScript CurrentSelectedTower { get; private set; }
+    public BaseTowerScript CurrentTowerUpgradedVersion { get; private set; }
 
     private void Awake()
+    {    
+        Shop.Event_UpdateCurrentBuyedTowerID += TowerFactory_UpdateCurrentSelectedTowerID;
+
+        GridObject.Event_CheckTowerHaveUpgrade += TowerFactory_IsTowerUpgradeExist;
+
+        SetTowerPrefabs();
+
+    }
+    private void SetTowerPrefabs()
     {
-        PlacementManager.Event_requestNewTower += TowerFactory_InstantiateTower;
-        PlacementManager.Event_isTowerUpgradeExist += TowerFactroy_IsTowerHasUpgradeVersion;
-
-
         foreach (BaseTowerScript tower in basePrefabs)
         {
-            baseTowers.Add(tower.GetTowerData().towerID, tower);
+            simpleTowers.Add(tower.GetTowerData().towerID, tower);
         }
 
         foreach (BaseTowerScript tower in upgradePrefabs)
@@ -31,47 +40,37 @@ public class TowerFactory : MonoBehaviour
             AdvanceTowers.Add(tower.GetTowerData().towerID, tower);
         }
     }
-    private BaseTowerScript TowerFactory_InstantiateTower(string currentSelectedtowerID, GridObject currentSelectedGridObject)
+    private void TowerFactory_UpdateCurrentSelectedTowerID(BaseTowerScript currentSelectedTowerScript)
     {
-        var currentSelectedTower = baseTowers[currentSelectedtowerID];
-
-        if (!currentSelectedGridObject.IsThereTowerOnGrid)
-            return Instantiate(currentSelectedTower, currentSelectedGridObject.transform.position, Quaternion.identity);
-
-        var UpgradedTower = GetTowerUpgradedVersion(currentSelectedGridObject, currentSelectedTower);
-
-        if(!UpgradedTower)
-            return null;
-
-        return Instantiate(UpgradedTower, currentSelectedGridObject.transform.position, Quaternion.identity); ;
-
-    }
-    private bool TowerFactroy_IsTowerHasUpgradeVersion(string currentSelectedtowerID, GridObject currentSelectedGridObject)
-    {
-        var currentSelectedTower = baseTowers[currentSelectedtowerID];
-        Debug.Log(GetTowerUpgradedVersion(currentSelectedGridObject, currentSelectedTower));
-        return GetTowerUpgradedVersion(currentSelectedGridObject, currentSelectedTower);
-       
+        CurrentSelectedTowerID = currentSelectedTowerScript.GetTowerData().towerID;
+        CurrentSelectedTower = simpleTowers[CurrentSelectedTowerID];
     }
 
-    // DÜZELT
-    private BaseTowerScript GetTowerUpgradedVersion(GridObject currentSelectedGridObject, BaseTowerScript currentSelectedTower)
+    public BaseTowerScript InstantiateTower(GridObject currentGridObject)
     {
-        var gridTower = currentSelectedGridObject.GetTowerObjectOnGrid();
+        if (!currentGridObject.IsThereTowerOnGrid)
+            return CurrentSelectedTower;
 
-        if (!gridTower)
-            return null;
-           
-        var gridTowerData = gridTower.GetTowerData();
+        if (CurrentTowerUpgradedVersion != null)
+            return CurrentTowerUpgradedVersion;
 
-        var UpradedVersionOfTower = gridTowerData.towerLinks.Where(x => x.linkedTower == currentSelectedTower.GetTowerData()).FirstOrDefault();
-
-        if (UpradedVersionOfTower != null)
-        {
-            var UpgradedTower = AdvanceTowers[UpradedVersionOfTower.UpgradedTower.towerID];
-            return UpgradedTower;
-        }
         return null;
     }
+    private BaseTowerScript GetTowerUpgrade(BaseTowerScript towerOnGrid)
+    {
+        var gridTowerData = towerOnGrid.GetTowerData();
+
+        var UpgradedVersionOfTower = gridTowerData.towerLinks.Where(x => x.linkedTower == CurrentSelectedTower.GetTowerData())
+            .FirstOrDefault();
+       
+        if (UpgradedVersionOfTower != null)
+            CurrentTowerUpgradedVersion = AdvanceTowers[UpgradedVersionOfTower.UpgradedTower.towerID];
+        else
+            CurrentTowerUpgradedVersion = null;
+
+        return CurrentTowerUpgradedVersion;
+    }
+    private bool TowerFactory_IsTowerUpgradeExist(BaseTowerScript towerOnGrid) => GetTowerUpgrade(towerOnGrid);
+
 
 }
