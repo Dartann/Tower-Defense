@@ -4,21 +4,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Unity.Burst.CompilerServices;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlacementManager : MonoBehaviour
 {
-    [SerializeField] TowerFactory towerFactory;
-   
-    GameObject currentGridTileObject;
+    public delegate BaseTowerScript RequestTowerUpgrade(string TowerID);
+    public static RequestTowerUpgrade Event_RequestTowerUpgrade;
+
+    GridObject currentGridTileObject;
+    BaseTowerScript currentBuyedTower;
+    BaseTowerScript currentBuyedTowerUpgradeVersion;
 
     bool isInBuildingMode = true;
 
-    private void PlacementManager_UpdateCurrentGridObject(GameObject gridobject) { currentGridTileObject = gridobject; }
+    private void PlacementManager_UpdateCurrentGridObject(GridObject gridobject)
+    {
+        //Can be null if outside grid
+        currentGridTileObject = gridobject;
+        ChangeCursorManager.Instance.ChangeCursorTexture(ChangeCursorManager.CursorType.normal);
+        GetTowerCombineVersion();
+    }
+    private void PlacementManager_UpdateCurrentBuyedTower(BaseTowerScript buyedTower) => currentBuyedTower = buyedTower;
     private void Awake()
     {
         GridObject.Event_UpdateCurrentGridobject += PlacementManager_UpdateCurrentGridObject;
+
+        TowerFactory.Event_UpdateCurrentBuyedTower += PlacementManager_UpdateCurrentBuyedTower;
     }
 
     private void Update()
@@ -33,17 +46,39 @@ public class PlacementManager : MonoBehaviour
     }
     private void BuildOnCurrentGridTile(){
 
-        var gridData = currentGridTileObject.GetComponent<GridObject>();
-
-        var createdTower = towerFactory.InstantiateTower(gridData);
-
-        if (createdTower == null)
+        if (!currentGridTileObject.IsThereTowerOnGrid)
+        {
+            var NewTower = Instantiate(currentBuyedTower, currentGridTileObject.transform.position, Quaternion.identity);
+            currentGridTileObject.SetTowerObjectOnGrid(NewTower);
+            GetTowerCombineVersion();
             return;
-
-        var NewTower = Instantiate(createdTower, gridData.transform.position, Quaternion.identity);
-        gridData.SetTowerObjectOnGrid(NewTower);
+        }     
+        if (currentBuyedTowerUpgradeVersion)
+        {
+            var NewTower = Instantiate(currentBuyedTowerUpgradeVersion, currentGridTileObject.transform.position, Quaternion.identity);
+            currentGridTileObject.SetTowerObjectOnGrid(NewTower);
+            return;
+        }
 
     }
-    private bool CanBuild() => isInBuildingMode && currentGridTileObject && towerFactory.CurrentSelectedTower;
+    private void GetTowerCombineVersion()
+    {
+
+        currentBuyedTowerUpgradeVersion = null;
+
+        if (!currentGridTileObject || !currentGridTileObject.IsThereTowerOnGrid || !currentBuyedTower)    
+            return;
+
+        var TowerData = currentGridTileObject.GetTowerObjectOnGrid().GetTowerData();
+        var UpgradedTowerData = TowerData.GetTowerUpgradeVersion(currentBuyedTower.GetTowerData());
+
+        if (!UpgradedTowerData)
+            return;
+
+        currentBuyedTowerUpgradeVersion = Event_RequestTowerUpgrade.Invoke(UpgradedTowerData.towerID);
+
+        ChangeCursorManager.Instance.ChangeCursorTexture(ChangeCursorManager.CursorType.avaible);
+    }
+    private bool CanBuild() => isInBuildingMode && currentGridTileObject && currentBuyedTower;
 
 }

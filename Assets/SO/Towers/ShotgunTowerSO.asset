@@ -15,7 +15,7 @@ MonoBehaviour:
   damage: 50
   range: 2
   fireRate: 1
-  bulletSpeed: 0
+  bulletSpeed: 3
   towerLinks:
-  - linkedTower: {fileID: 11400000, guid: 7a9821084e954aa4fa0339fc25b2b8d9, type: 2}
+  - RequiredTower: {fileID: 11400000, guid: 7a9821084e954aa4fa0339fc25b2b8d9, type: 2}
     UpgradedTower: {fileID: 11400000, guid: 3da319768ceb34b4e9558a457e01097c, type: 2}

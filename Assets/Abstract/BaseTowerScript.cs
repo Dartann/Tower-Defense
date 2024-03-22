@@ -40,21 +40,22 @@ public abstract class BaseTowerScript : MonoBehaviour
     protected void GetTarget()
     {
         FindTarget();
-        SetTarget();
 
-        if (target)
+        if (!target)
+            SetTarget();
+        else
         {
             CheckTargetIsInRange();
             TurnHeadToEnemy();
-            return;
         }
+        
     }
     protected void FindTarget() => targetsInViewRadius = Physics2D.OverlapBoxAll(transform.position, new Vector2(Range, Range), 0f, targetMask);
 
     // if tower looking for multiple enemy override this
     protected virtual void SetTarget()
     {
-        if (targetsInViewRadius.Length > 0 && !target)
+        if (targetsInViewRadius.Length > 0)
             target = targetsInViewRadius[0];
     }
     protected void CheckTargetIsInRange(){

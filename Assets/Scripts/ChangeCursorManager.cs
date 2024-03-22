@@ -8,6 +8,9 @@ using static ChangeCursorManager;
 
 public class ChangeCursorManager : MonoBehaviour
 {
+    public static ChangeCursorManager Instance { get; private set; }
+
+    [SerializeField] Camera _camera;
     public enum CursorType
     {
         normal,
@@ -23,21 +26,25 @@ public class ChangeCursorManager : MonoBehaviour
     }
 
     public List<CursorData> cursorData = new();
-
-    private void OnEnable() => GridObject.Event_ChangeCursor += ChangeCursorTexture;
-    private void OnDisable() => GridObject.Event_ChangeCursor -= ChangeCursorTexture;
-
-    private void ChangeCursorTexture(CursorType cursorType, Vector2 objectPosition)
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+          
+    }
+    public void ChangeCursorTexture(CursorType cursorType)
     {
         if(cursorType == CursorType.normal){
-            Cursor.SetCursor(null, objectPosition, CursorMode.Auto);
+            Cursor.SetCursor(null, _camera.ScreenToWorldPoint(Input.mousePosition), CursorMode.Auto);
             return;
         }
 
         foreach (CursorData texture in cursorData)
         {
             if (texture.cursorType == cursorType)
-                Cursor.SetCursor(texture.cursorTexture, objectPosition,CursorMode.Auto);
+                Cursor.SetCursor(texture.cursorTexture, _camera.ScreenToWorldPoint(Input.mousePosition), CursorMode.Auto);
             
         }     
     }
