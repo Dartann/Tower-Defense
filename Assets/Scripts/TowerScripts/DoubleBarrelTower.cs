@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DoubleBarrelTower : BaseTowerScript
+public class DoubleBarrelTower : BaseFighterTower
 {
     protected override void FireBullet()
     {

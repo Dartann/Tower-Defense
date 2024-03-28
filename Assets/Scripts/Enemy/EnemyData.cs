@@ -4,10 +4,7 @@ using UnityEngine;
 
 public class EnemyData : MonoBehaviour
 {
-    [SerializeField] private EnemyDataSO m_EnemyDataSO;
-
-    public int GetHealth() => m_EnemyDataSO.health;
-    public int GetSpeed() => m_EnemyDataSO.speed;
+    public EnemyDataSO Enemy_DataSO;
 
 }
 

@@ -1,19 +1,15 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "TowerDataSO", menuName = "Tower/TowerDataSO")]
-public class TowerDataSO : ScriptableObject
+public abstract class TowerDataSO : ScriptableObject
 {
     public readonly string towerID = Guid.NewGuid().ToString();
 
-    [Header("Tower Stats")]
-    public int damage;
-    public int range;
-    public float fireRate;
-    public int bulletSpeed;
+    [Header("Tower Price")]
+    public int RequestedMoney;
 
     public List<TowerLinkUps> towerLinks = new();
 
@@ -23,14 +19,17 @@ public class TowerDataSO : ScriptableObject
         public TowerDataSO RequiredTower;
         public TowerDataSO UpgradedTower;
     }
-    public TowerDataSO GetTowerUpgradeVersion(TowerDataSO BuyedTower){
+    public TowerDataSO GetTowerUpgradeVersion(TowerDataSO BuyedTower)
+    {
 
-        var UpgradedTower = towerLinks.Where(LinkData => LinkData.RequiredTower == BuyedTower).FirstOrDefault();
+        var linkedTower = towerLinks.Where(LinkData => LinkData.RequiredTower == BuyedTower).FirstOrDefault();
 
-        if (UpgradedTower == null)
+        if (linkedTower == null)
             return null;
 
-        return UpgradedTower.UpgradedTower;
+        return linkedTower.UpgradedTower;
+
     }
+
 }
 

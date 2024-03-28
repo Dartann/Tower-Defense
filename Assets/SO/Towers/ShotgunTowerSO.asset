@@ -9,13 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89a15348dbd2eaa48859fce4fc2a7f53, type: 3}
+  m_Script: {fileID: 11500000, guid: 8d9730455eebc7a4da192e94bfe851af, type: 3}
   m_Name: ShotgunTowerSO
   m_EditorClassIdentifier: 
-  damage: 50
-  range: 2
-  fireRate: 1
-  bulletSpeed: 3
+  RequestedMoney: 200
   towerLinks:
-  - RequiredTower: {fileID: 11400000, guid: 7a9821084e954aa4fa0339fc25b2b8d9, type: 2}
-    UpgradedTower: {fileID: 11400000, guid: 3da319768ceb34b4e9558a457e01097c, type: 2}
+  - RequiredTower: {fileID: 11400000, guid: e2f59864179084a47916f4064efc5dd7, type: 2}
+    UpgradedTower: {fileID: 11400000, guid: b433b7827e1f9a244b3edfd17ce46e75, type: 2}
+  Damage: 15
+  Range: 3
+  FireRate: 2.5
+  BulletSpeed: 3

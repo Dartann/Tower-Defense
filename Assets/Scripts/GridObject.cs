@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GridObject : MonoBehaviour
@@ -28,10 +25,9 @@ public class GridObject : MonoBehaviour
     }
 
     private void OnMouseEnter() => Event_UpdateCurrentGridobject?.Invoke(this);
-    private void OnMouseExit() => Event_UpdateCurrentGridobject.Invoke(null);  
+    private void OnMouseExit() => Event_UpdateCurrentGridobject?.Invoke(null);  
     private void OnMouseOver()
-    {
-      
+    {    
         //Add hightlight when on grid
     }
 

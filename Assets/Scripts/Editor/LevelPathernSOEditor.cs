@@ -9,6 +9,7 @@ public class LevelPathernSOEditor : Editor
 {
     SerializedProperty _levels;
 
+    SerializedProperty _level;
     SerializedProperty _levelHeight;
     SerializedProperty _levelWidth;
 
@@ -21,32 +22,75 @@ public class LevelPathernSOEditor : Editor
     SerializedProperty _nextPathStartPosition;
 
     bool show;
-    private void OnEnable() => _levels = serializedObject.FindProperty("levels");
+    private void OnEnable()
+    {
+        _levels = serializedObject.FindProperty("levels");
+
+        _level = _levels.FindPropertyRelative("level");
+        _levelHeight = _levels.FindPropertyRelative("levelHeight");
+        _levelWidth = _levels.FindPropertyRelative("levelWidth");
+
+        _gridPath = _levels.FindPropertyRelative("gridPath");
+    }
     public override void OnInspectorGUI()
     {
+        EditorGUI.BeginChangeCheck();
+
         serializedObject.Update();
 
         //base.OnInspectorGUI();
         BuildInspector();
 
         CheckStartAndEndPositionBetweenPaths();
+        DrawCurrentMap();
 
-        serializedObject.ApplyModifiedProperties();
+        if(EditorGUI.EndChangeCheck())
+            serializedObject.ApplyModifiedProperties();
+    }   
+    private void DrawCurrentMap()
+    {
+        EditorGUILayout.Space(25);
+
+        if (GUILayout.Button("Preview Current Map"))
+        {
+            for (int i = 0; i < _gridPath.arraySize; i++)
+            {
+                //grid Path
+                var startPosition = _gridPath.GetArrayElementAtIndex(i).FindPropertyRelative("pathStartPosition");
+                var endPosition = _gridPath.GetArrayElementAtIndex(i).FindPropertyRelative("pathEndPosition");
+
+                Debug.DrawLine((Vector3Int)startPosition.vector2IntValue, (Vector3Int)endPosition.vector2IntValue, color: Color.green, 0.1f);
+
+            }
+            // TODO: currently grid area is bit offsize, need fix later
+            // Grid Area
+            Debug.DrawLine(Vector3.zero, new Vector3(_levelWidth.intValue, 0, 0), color: Color.green, 0.1f);
+            Debug.DrawLine(Vector3.zero, new Vector3(0, _levelHeight.intValue, 0), color: Color.green, 0.1f);
+            Debug.DrawLine(new Vector3(0, _levelHeight.intValue, 0), new Vector3(_levelWidth.intValue, _levelHeight.intValue, 0), color: Color.green, 0.1f);
+            Debug.DrawLine(new Vector3(_levelWidth.intValue, 0, 0), new Vector3(_levelWidth.intValue, _levelHeight.intValue, 0), color: Color.green, 0.1f);
+            SceneView.RepaintAll();
+        }
     }
     private void BuildInspector()
     {
-        EditorGUILayout.PropertyField(_levels.FindPropertyRelative("level"));
-        EditorGUILayout.PropertyField(_levels.FindPropertyRelative("levelHeight"));
-        EditorGUILayout.PropertyField(_levels.FindPropertyRelative("levelWidth"));
+        EditorGUILayout.LabelField("Level Settings", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(_level);
+        EditorGUILayout.PropertyField(_levelHeight);
+        EditorGUILayout.PropertyField(_levelWidth);
 
-        _gridPath = _levels.FindPropertyRelative("gridPath");
+        EditorGUILayout.Space();
+
+        EditorGUILayout.LabelField("Grid Path Settings", EditorStyles.boldLabel);
+        EditorGUI.indentLevel += 1;
 
         EditorGUILayout.BeginHorizontal();
-        show = EditorGUILayout.Foldout(show, "Gridpath");
+        EditorGUIUtility.labelWidth = 50;
+        show = EditorGUILayout.Foldout(show, "Grid Paths");
         EditorGUILayout.PropertyField(_gridPath.FindPropertyRelative("Array.size"));
         EditorGUILayout.EndHorizontal();
+        EditorGUIUtility.labelWidth = 0;
 
-        EditorGUI.indentLevel += 1;
+        EditorGUILayout.Space();
         if (show){
            for (int i = 0; i < _gridPath.arraySize; i++)
            {
@@ -56,7 +100,7 @@ public class LevelPathernSOEditor : Editor
 
                 EditorGUILayout.PropertyField(_gridPath.GetArrayElementAtIndex(i).FindPropertyRelative("pathEndPosition"));
                 EditorGUILayout.PropertyField(_gridPath.GetArrayElementAtIndex(i).FindPropertyRelative("isMovementOnX"));
-           }
+            }
         }
         EditorGUI.indentLevel -= 1;
     }  
@@ -76,11 +120,6 @@ public class LevelPathernSOEditor : Editor
     }
     private void CheckStartAndEndPositionBetweenPaths()
     {
-        _levelHeight = _levels.FindPropertyRelative("levelHeight");
-        _levelWidth = _levels.FindPropertyRelative("levelWidth");
-
-        _gridPath = _levels.FindPropertyRelative("gridPath");
-
         for (int gridpath_index = 0; gridpath_index < _gridPath.arraySize; gridpath_index++)
         {
               var currentPathIndex = _gridPath.GetArrayElementAtIndex(gridpath_index);

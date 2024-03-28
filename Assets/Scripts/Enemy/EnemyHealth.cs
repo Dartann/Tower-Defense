@@ -1,14 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
+    public static Action<int> Event_OnEnemyDie;
+
+    EnemyData enemyData;
+
     private int health;
     private int maxHealth;
 
+
     void Start(){
-        maxHealth = GetComponent<EnemyData>().GetHealth();
+        enemyData = GetComponent<EnemyData>();
+        maxHealth = enemyData.Enemy_DataSO.health;
         health = maxHealth;
     }
 
@@ -23,7 +30,10 @@ public class EnemyHealth : MonoBehaviour
     void CheckHealth(){
 
         if(health == 0)
+        {
+            Event_OnEnemyDie.Invoke(enemyData.Enemy_DataSO.moneyReward);
             Destroy(gameObject);
+        }
     }
 
 }

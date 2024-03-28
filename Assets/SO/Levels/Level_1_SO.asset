@@ -30,5 +30,5 @@ MonoBehaviour:
       pathEndPosition: {x: 8, y: 8}
       isMovementOnX: 1
     - pathStartPosition: {x: 8, y: 8}
-      pathEndPosition: {x: 8, y: 5}
+      pathEndPosition: {x: 8, y: 9}
       isMovementOnX: 0

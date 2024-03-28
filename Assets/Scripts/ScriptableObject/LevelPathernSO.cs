@@ -33,5 +33,5 @@ public class LevelPathernSO : ScriptableObject
         
         return Vector2.zero;
     }
-
+    
 }

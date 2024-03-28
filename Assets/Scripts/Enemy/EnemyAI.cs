@@ -11,7 +11,7 @@ public class EnemyAI : MonoBehaviour
     int pathIndex = 0;
 
     int speed;
-    private void Start() => speed = GetComponent<EnemyData>().GetSpeed();
+    private void Start() => speed = GetComponent<EnemyData>().Enemy_DataSO.speed;
 
     private void FixedUpdate(){
         transform.position = Vector2.MoveTowards(transform.position, _currentTargetPosition, speed * Time.deltaTime);

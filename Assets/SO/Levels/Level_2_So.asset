@@ -14,18 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levels:
     level: 2
-    levelHeight: 10
-    levelWidth: 15
+    levelHeight: 20
+    levelWidth: 25
     gridPath:
     - pathStartPosition: {x: 3, y: 1}
-      pathEndPosition: {x: 7, y: 1}
+      pathEndPosition: {x: 15, y: 1}
       isMovementOnX: 1
-    - pathStartPosition: {x: 7, y: 1}
-      pathEndPosition: {x: 7, y: 5}
+    - pathStartPosition: {x: 15, y: 1}
+      pathEndPosition: {x: 15, y: 7}
       isMovementOnX: 0
-    - pathStartPosition: {x: 7, y: 5}
-      pathEndPosition: {x: 9, y: 5}
+    - pathStartPosition: {x: 15, y: 7}
+      pathEndPosition: {x: 9, y: 7}
       isMovementOnX: 1
-    - pathStartPosition: {x: 9, y: 5}
-      pathEndPosition: {x: 9, y: 8}
+    - pathStartPosition: {x: 9, y: 7}
+      pathEndPosition: {x: 9, y: 15}
       isMovementOnX: 0

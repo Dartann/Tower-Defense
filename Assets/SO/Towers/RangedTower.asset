@@ -9,15 +9,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89a15348dbd2eaa48859fce4fc2a7f53, type: 3}
+  m_Script: {fileID: 11500000, guid: 8d9730455eebc7a4da192e94bfe851af, type: 3}
   m_Name: RangedTower
   m_EditorClassIdentifier: 
-  damage: 10
-  range: 5
-  fireRate: 0.5
-  bulletSpeed: 5
+  RequestedMoney: 100
   towerLinks:
   - RequiredTower: {fileID: 11400000}
-    UpgradedTower: {fileID: 11400000, guid: 944236666fa23cb44a8af92044652919, type: 2}
-  - RequiredTower: {fileID: 11400000, guid: 1fb8a15e32498af40a745db2d1511417, type: 2}
-    UpgradedTower: {fileID: 11400000, guid: 3da319768ceb34b4e9558a457e01097c, type: 2}
+    UpgradedTower: {fileID: 11400000, guid: b02d37ea223f2244f92f7d155c481f19, type: 2}
+  - RequiredTower: {fileID: 11400000, guid: 3e166eb25af282247ba48733bd3e1b79, type: 2}
+    UpgradedTower: {fileID: 11400000, guid: b433b7827e1f9a244b3edfd17ce46e75, type: 2}
+  Damage: 20
+  Range: 4
+  FireRate: 3
+  BulletSpeed: 5

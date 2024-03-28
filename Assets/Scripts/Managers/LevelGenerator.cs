@@ -1,13 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
-using UnityEditorInternal;
+using UnityEditor;
 using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
@@ -28,7 +22,7 @@ public class LevelGenerator : MonoBehaviour
     [Header("GridColor")]
     [SerializeField] private Color32 gridColor;
 
-    private LevelPathernSO _currentLevelData;
+    [SerializeField] private LevelPathernSO _currentLevelData;
     [SerializeField] private int _currentLevel;
 
     private List<Transform> currentLevelAIPathPoints = new();
@@ -129,8 +123,7 @@ public class LevelGenerator : MonoBehaviour
 
         cloneGrid.GetComponent<SpriteRenderer>().color = gridColor;
     }
-
+ 
     public List<Transform> GetPathList() => currentLevelAIPathPoints;
-
 
 }

@@ -183,7 +183,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dd5a33ff44f5e4cbb5810977edc07e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerDataSO: {fileID: 11400000, guid: 7a9821084e954aa4fa0339fc25b2b8d9, type: 2}
+  towerDataSO: {fileID: 11400000, guid: e2f59864179084a47916f4064efc5dd7, type: 2}
   towerBulletPrefab: {fileID: 5665044111479760635, guid: 83261f7324217d9438d1b9282b853dc5, type: 3}
   bulletSpawnPosition:
   - {fileID: 3064507228468077396}

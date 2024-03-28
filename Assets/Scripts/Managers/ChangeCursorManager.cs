@@ -1,10 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
-using static ChangeCursorManager;
 
 public class ChangeCursorManager : MonoBehaviour
 {
@@ -14,8 +10,7 @@ public class ChangeCursorManager : MonoBehaviour
     public enum CursorType
     {
         normal,
-        avaible,
-        notAvaible,  
+        upgradeAvailable,
     }
 
     [Serializable]
