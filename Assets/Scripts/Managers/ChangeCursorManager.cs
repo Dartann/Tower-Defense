@@ -5,8 +5,6 @@ using UnityEngine;
 public class ChangeCursorManager : MonoBehaviour
 {
     public static ChangeCursorManager Instance { get; private set; }
-
-    [SerializeField] Camera _camera;
     public enum CursorType
     {
         normal,
@@ -30,16 +28,18 @@ public class ChangeCursorManager : MonoBehaviour
           
     }
     public void ChangeCursorTexture(CursorType cursorType)
-    {
-        if(cursorType == CursorType.normal){
-            Cursor.SetCursor(null, _camera.ScreenToWorldPoint(Input.mousePosition), CursorMode.Auto);
+    {   
+        if (cursorType == CursorType.normal){
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
             return;
         }
 
-        foreach (CursorData texture in cursorData)
+        foreach (CursorData cursorTexture in cursorData)
         {
-            if (texture.cursorType == cursorType)
-                Cursor.SetCursor(texture.cursorTexture, _camera.ScreenToWorldPoint(Input.mousePosition), CursorMode.Auto);
+            if (cursorTexture.cursorType == cursorType)
+            {
+                Cursor.SetCursor(cursorTexture.cursorTexture, Vector2.zero, CursorMode.ForceSoftware);
+            }
             
         }     
     }

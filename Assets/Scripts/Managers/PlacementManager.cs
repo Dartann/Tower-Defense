@@ -21,6 +21,8 @@ public class PlacementManager : MonoBehaviour
         TowerFactory.Event_UpdateCurrentBuyedTower += PlacementManager_UpdateCurrentBuyedTower;
         TowerFactory.Event_CurrentGridTowerUpgradeVersion += PlacementManager_UpdateCurrentGridTowerUpgrade;
 
+        UIManager.Event_onBuildMode += DisableOrEnableBuildMode;
+
     }
     private void Update()
     {
@@ -56,5 +58,6 @@ public class PlacementManager : MonoBehaviour
     }
 
     private bool CanBuild() => isInBuildingMode && currentGridTileObject && currentBuyedTowerObject;
+    private void DisableOrEnableBuildMode(bool mode) => isInBuildingMode = mode;
 
 }

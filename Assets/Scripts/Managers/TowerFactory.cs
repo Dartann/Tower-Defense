@@ -43,6 +43,9 @@ public class TowerFactory : MonoBehaviour
     }
     public void TowerFactory_UpdateCurrentGridTower(GridObject gridObject)
     {
+        ChangeCursorManager.Instance.ChangeCursorTexture(ChangeCursorManager.CursorType.normal);
+        Event_CurrentGridTowerUpgradeVersion?.Invoke(null);
+
         if (!gridObject)
             return;
 
@@ -51,9 +54,6 @@ public class TowerFactory : MonoBehaviour
     }
     private void CheckGridTowerAndBuyedTowerCombinable()
     {
-        Event_CurrentGridTowerUpgradeVersion?.Invoke(null);
-        ChangeCursorManager.Instance.ChangeCursorTexture(ChangeCursorManager.CursorType.normal);
-
         if (currentGridTowerObject && !string.IsNullOrEmpty(BuyedTowerID))
         {
             var TowerData = currentGridTowerObject.GetTowerData();

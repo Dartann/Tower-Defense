@@ -10,6 +10,7 @@ public class GridObject : MonoBehaviour
     public void SetTowerObjectOnGrid(BaseTowerScript transform){
         DestroyOldTowerObject();
         towerObjectOnGrid = transform;
+        Event_UpdateCurrentGridobject?.Invoke(this);
     }
     public BaseTowerScript GetTowerObjectOnGrid(){
         if(IsThereTowerOnGrid)

@@ -1,11 +1,17 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    Transform currentCatagory;
-    public void SetActiveSingleUI(Transform UIobject)
+    public static Action<bool> Event_onBuildMode;
+
+    [SerializeField] Transform BuildLayOut;
+
+    Transform currentShopCatagory;
+
+    public void SetActiveUI(Transform UIobject)
     {
         if (UIobject == null)
         {
@@ -13,7 +19,7 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        if (UIobject.gameObject.activeSelf)
+        if (IsTransformActive(UIobject))
             UIobject.gameObject.SetActive(false);
         else
             UIobject.gameObject.SetActive(true);
@@ -21,18 +27,18 @@ public class UIManager : MonoBehaviour
     }
     public void SetActiveShopCategorys(Transform UIobject)
     {
-        if (!currentCatagory)
+        if (!currentShopCatagory)
         {
-            currentCatagory = UIobject;
+            currentShopCatagory = UIobject;
             UIobject.gameObject.SetActive(true);
             return;
         }
-        currentCatagory.gameObject.SetActive(false);
-        currentCatagory = UIobject;
-        currentCatagory.gameObject.SetActive(true);
-
-
+        currentShopCatagory.gameObject.SetActive(false);
+        currentShopCatagory = UIobject;
+        currentShopCatagory.gameObject.SetActive(true);
 
     }
+    public bool IsTransformActive(Transform layout) => layout.gameObject.activeSelf;
+    public void DisableBuildMode() => Event_onBuildMode?.Invoke(BuildLayOut.gameObject.activeSelf);
 
 }
