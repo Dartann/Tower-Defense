@@ -21,7 +21,7 @@ public class PlacementManager : MonoBehaviour
         TowerFactory.Event_UpdateCurrentBuyedTower += PlacementManager_UpdateCurrentBuyedTower;
         TowerFactory.Event_CurrentGridTowerUpgradeVersion += PlacementManager_UpdateCurrentGridTowerUpgrade;
 
-        UIManager.Event_onBuildMode += DisableOrEnableBuildMode;
+        UIManager.Event_ÝnBuildMode += DisableOrEnableBuildMode;
 
     }
     private void Update()

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    public static Action<bool> Event_onBuildMode;
+    public static Action<bool> Event_ÝnBuildMode;
 
     [SerializeField] Transform BuildLayOut;
 
@@ -39,6 +39,6 @@ public class UIManager : MonoBehaviour
 
     }
     public bool IsTransformActive(Transform layout) => layout.gameObject.activeSelf;
-    public void DisableBuildMode() => Event_onBuildMode?.Invoke(BuildLayOut.gameObject.activeSelf);
+    public void DisableBuildMode() => Event_ÝnBuildMode?.Invoke(BuildLayOut.gameObject.activeSelf);
 
 }
